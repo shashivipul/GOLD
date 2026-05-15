@@ -1,0 +1,53 @@
+# Default hyperparameters for GOLD reference / sweeps.
+# Command-line flags in src/config.py override these.
+
+seed: 0
+device: cuda
+gnn: GCN
+hidden_dim: 128
+num_layers: 2
+dropout: 0.5
+
+# Stage 1: GraphMAE pretraining of the source teacher.
+pretrain:
+  epochs: 200
+  lr: 1.0e-3
+  weight_decay: 5.0e-5
+  mask_rate: 0.5
+  replace_rate: 0.1
+  alpha_l: 2.0
+  drop_edge_rate: 0.0
+  batch_size: -1            # <= 0 for full-graph (recommended for small graphs)
+  patience: 20
+
+# Stage 2: GOLD cross-domain distillation.
+train:
+  exp_setting: tran          # 'tran' or 'ind'
+
+  mlp_layers: 2
+  mlp_dropout: 0.5
+  mlp_norm: none
+
+  adapter_hidden: 256
+  adapter_dropout: 0.0
+
+  # Loss weights -- L_GOLD = L_task + lambda_ot L_OT + lambda_de L_DE + lambda_kd L_KD
+  lambda_ot: 0.5
+  lambda_de: 0.1
+  lambda_kd: 1.0
+
+  # OT (Sinkhorn divergence; eq 8-10)
+  ot_eps: 0.05
+  ot_sinkhorn_iter: 50
+  ot_batch_size: 256
+
+  # Relational KD (eq 13-15)
+  kd_num_anchors: 512
+  kd_num_pos: 5
+  kd_num_neg: 15
+  kd_tau: 0.5
+
+  epochs: 200
+  lr: 1.0e-3
+  weight_decay: 5.0e-4
+  patience: 50
