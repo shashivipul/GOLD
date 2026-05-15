@@ -76,4 +76,40 @@ bash scripts/run_example.sh
 Or run the stages manually -- see `scripts/run_example.sh` for the full
 argument set; defaults match `configs/default.yaml`.
 
+#How to Run
+
+```bash
+cd cdgkd
+pip install -r requirements.txt
+
+# Stage 1: GraphMAE pretrain teacher on Cora (~3 min on GPU)
+python src/pretrain.py \
+    --source cora \
+    --gnn GCN \
+    --hidden_dim 128 \
+    --num_layers 2 \
+    --epochs 200 \
+    --mask_rate 0.5 \
+    --replace_rate 0.1 \
+    --alpha_l 2.0 \
+    --batch_size -1 \
+    --save_path checkpoints/teacher_cora_GCN.pth
+
+# Stage 2: GOLD cross-domain KD into MLP on Citeseer (~10 min on GPU)
+python src/train.py \
+    --source cora \
+    --target citeseer \
+    --gnn GCN \
+    --hidden_dim 128 \
+    --num_layers 2 \
+    --teacher_ckpt checkpoints/teacher_cora_GCN.pth \
+    --lambda_ot 0.5 \
+    --lambda_de 0.1 \
+    --lambda_kd 1.0 \
+    --kd_num_pos 5 \
+    --kd_num_neg 15 \
+    --kd_tau 0.5 \
+    --epochs 200
+```
+
 
