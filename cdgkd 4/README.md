@@ -78,4 +78,10 @@ bash scripts/run_example.sh
 Or run the stages manually -- see `scripts/run_example.sh` for the full
 argument set; defaults match `configs/default.yaml`.
 
+```bash
+python src/pretrain.py --source cora --gnn GCN --hidden_dim 128 --num_layers 2 \
+    --epochs 20 --save_path checkpoints/sanity.pth
 
+python src/train.py --source cora --target citeseer --gnn GCN --hidden_dim 128 \
+    --teacher_ckpt checkpoints/sanity.pth --epochs 20
+```
