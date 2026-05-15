@@ -78,29 +78,4 @@ bash scripts/run_example.sh
 Or run the stages manually -- see `scripts/run_example.sh` for the full
 argument set; defaults match `configs/default.yaml`.
 
-## Design notes
 
-- **GraphMAE for Stage 1.** Masked feature reconstruction explicitly forces
-  the encoder to use neighborhood information, producing weights that encode
-  transferable structural processing -- exactly the capability the cross-domain
-  setting needs. Only the encoder state_dict is saved; the decoder,
-  encoder-to-decoder bridge, and [MASK] token are scaffolding.
-- **Adapter input to BOTH teacher and student.** Per paper Section 4.1, both
-  g^S and f_theta consume the same Z^T = phi(X^T). The deployed predictor
-  c_eta o f_theta o phi has no graph dependency.
-- **Relational KD vs. pointwise.** The paper transfers teacher-induced
-  neighborhood distributions rather than absolute embedding coordinates,
-  on the intuition that adapter-aligned but task-differing source/target
-  spaces share relative similarities more than absolute positions.
-- **OT minibatching.** Sinkhorn divergence is computed on sampled minibatches
-  (--ot_batch_size) so the O(B^2) cost stays bounded regardless of graph size.
-- **Scalability flag.** Stage 2 builds the dense target adjacency once for
-  relational-KD candidate sampling. For ogbn-arxiv-scale graphs this is unsafe;
-  in that regime, restrict candidate sampling to anchor-induced subgraphs.
-
-## Credits
-
-Dataloaders, evaluation utilities, and base GNN definitions adapted from
-[Wu et al., 2023, KRD](https://github.com/LirongWu/KRD). GraphMAE follows
-[Hou et al., 2022](https://arxiv.org/abs/2205.10803). Sinkhorn divergence
-follows [Feydy et al., 2019](https://arxiv.org/abs/1810.08278).
