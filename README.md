@@ -1,7 +1,5 @@
 # GOLD: GNN-to-MLP KD from Out-of-Distribution Teachers
 
-Reference implementation of GOLD (paper anonymous; under review at TMLR).
-
 A GNN teacher is pretrained on a **source graph** with self-supervised GraphMAE,
 frozen, and used to supervise an MLP student deployed on a **target graph** with
 graph-free inference. A learned target-to-source feature adapter, regularized by
